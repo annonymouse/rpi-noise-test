@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+set -e
+set -x
+
+dd if=/dev/urandom of=/dev/null bs=4m
