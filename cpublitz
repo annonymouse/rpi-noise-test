@@ -9,11 +9,15 @@ wget http://www.roylongbottom.org.uk/Raspberry_Pi_Benchmarks.zip
 unzip Raspberry_Pi_Benchmarks.zip
 cd Raspberry_Pi_Benchmarks
 chmod +x whetstonePiA6
-./whetstonePiA6
 chmod +x dhrystonePiA6
-./dhrystonePiA6
 chmod +x busspeedPiA6
-./busspeedPiA6
 chmod +x memspeedPiA6
-./memspeedPiA6
 
+# Stupid tests want you to hit enter
+echo -e "\n" | ./whetstonePiA6
+echo -e "\n" | ./dhrystonePiA6
+echo -e "\n" | ./busspeedPiA6
+echo -e "\n" | ./memspeedPiA6
+
+cd ../../
+rm -r tmp
