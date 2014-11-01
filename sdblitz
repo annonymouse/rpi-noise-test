@@ -2,4 +2,10 @@
 set -e
 set -x
 
-dd if=/dev/urandom of=/dev/null bs=4m
+sdcard=/dev/mmcblk0
+# Read a lot off the sd card -- this should cause transactions.  We can do
+# similar things with USB
+while [ 0 -eq 0 ] 
+do 
+    dd if=$sdcard of=/dev/null bs=4M
+done
