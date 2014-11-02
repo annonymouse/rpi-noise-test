@@ -1,23 +1,20 @@
 #!/usr/bin/env python
 
-import RPIO, subprocess
+import argparse, subprocess
+import RPi.GPIO as GPIO
+from time import sleep
 
 def _resp(port, programs):
-    RPIO.setmode(RPIO.BOARD)
-    RPIO.setup(port, RPIO.IN)
     pids = dict()
-    if 0 == RPIO.input(port):
-        for p in programs:
-            pids[p] = subprocess.popen(p)
-
-    def callback(gpio, state):
+    def callback(gpio):
         if gpio != port:
             return
+        state = GPIO.input(gpio)
         if state == 1:
             # Stop doing things
             print "Changed to 1"
             for prog in programs:
-                if pids && prog in pids:
+                if pids and prog in pids:
                     pid = pids[prog]
                     pid.poll()
                     if not pid.returncode:
@@ -30,20 +27,38 @@ def _resp(port, programs):
             # Start doing things
             print "Changed to 0"
             for prog in programs:
-                if sub && prog in pids:
+                if prog in pids:
                     pid = pids[prog]
                     pid.poll()
                     if pid.returncode:
-                        pid= subprocess.popen(prog)
+                        pid= subprocess.Popen(prog)
                     else:
                         print "program is still running - we can't restart"
-    RPIO.add_interrupt_callback(port, callback, pull_up_down=RPIO.PUD_UP)
-    RPIO.wait_for_interrupts()
+
+    if 0 == GPIO.input(port):
+        print "port shorted"
+        for p in programs:
+            pids[p] = subprocess.Popen(p)
+    else:
+        print "not shorted"
+
+        GPIO.add_event_detect(port, GPIO.BOTH,
+            callback=callback, bouncetime=100)
+
+    while True:
+        sleep(5)
+    return
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser()
+    parser = argparse.ArgumentParser(
+            help="Will run a list of programs when the port pin is pulled down")
+    # For now only allow pin 26
+    parser.add_argument("port", type=int, choices=(26),
+            help="GPIO port to detect a short on")
     parser.add_argument("program", help="Program to execute when gpio fires",
             nargs="+")
     args = parser.parse_args()
-    _resp(26, args.program)
+    GPIO.setmode(GPIO.BOARD)
+    GPIO.setup(args.port, GPIO.IN, pull_up_down = GPIO.PUD_UP)
+    _resp(args.port, args.program)
 
