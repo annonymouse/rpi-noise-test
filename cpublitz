@@ -3,7 +3,7 @@ set -e
 set -x
 
 # Compile whetstone and run it
-mkdir tmp
+mkdir -p tmp
 cd tmp
 wget http://www.roylongbottom.org.uk/Raspberry_Pi_Benchmarks.zip
 unzip Raspberry_Pi_Benchmarks.zip
@@ -20,4 +20,4 @@ echo -e "\n" | ./busspeedPiA6
 echo -e "\n" | ./memspeedPiA6
 
 cd ../../
-rm -r tmp
+rm -rf tmp
