@@ -2,6 +2,13 @@
 set -e
 set -x
 
+function clean_up {
+    # Only works on gnu-ps
+    # Kill all the children
+    ps --pid $$ | tail -n +1 | awk '{print $1}' | xargs kill
+}
+
+trap clean_up SIGHUP SIGINT SIGTERM
 # Compile whetstone and run it
 mkdir -p tmp
 cd tmp
